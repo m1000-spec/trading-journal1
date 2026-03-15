@@ -1536,12 +1536,13 @@ function mkApex(id,opts){
 }
 
 /* ── mount TradingView Lightweight Chart (equity curve) ── */
-function mkTv(id,tvData,isPositive){
+function mkTv(id,tvData,isPositive,isPct){
   // Guard: fall back to ApexCharts area if TradingView not loaded
   if(typeof LightweightCharts==='undefined'){
     var labels=tvData.map(function(p){return p.time;});
     var vals=tvData.map(function(p){return p.value;});
-    apexArea(id,labels,vals,isPositive?COLORS.win:COLORS.loss,'Equity',function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});});
+    var fmt=isPct?function(v){return(v>=0?'+':'')+Number(v).toFixed(2)+'%';}:function(v){return'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});};
+    apexArea(id,labels,vals,isPositive?COLORS.win:COLORS.loss,'Equity',fmt);
     return null;
   }
   destroyChart(id);
@@ -1571,6 +1572,14 @@ function mkTv(id,tvData,isPositive){
     timeScale:{borderColor:dark?'#232836':'#e4e7ee',timeVisible:false,fixLeftEdge:true,fixRightEdge:true},
     handleScroll:false,handleScale:false,
   });
+  // Axis formatter: $ or %
+  const priceFormatter = isPct
+    ? function(price){return(price>=0?'+':'')+Number(price).toFixed(2)+'%';}
+    : function(price){
+        if(price>=0) return '$'+Number(price).toLocaleString('en-US',{maximumFractionDigits:0});
+        return '-$'+Number(Math.abs(price)).toLocaleString('en-US',{maximumFractionDigits:0});
+      };
+  chart.applyOptions({localization:{priceFormatter:priceFormatter}});
   const series=chart.addAreaSeries({
     lineColor:lc,
     topColor:lc+'30',
@@ -1579,7 +1588,7 @@ function mkTv(id,tvData,isPositive){
     crosshairMarkerVisible:true,
     crosshairMarkerRadius:4,
     crosshairMarkerBackgroundColor:lc,
-    priceFormat:{type:'price',precision:0,minMove:1},
+    priceFormat:{type:'custom',formatter:priceFormatter,minMove:isPct?0.01:1},
     priceLineVisible:false,
     lastValueVisible:true,
   });
@@ -1686,28 +1695,60 @@ function apexDonut(id,series,labels,wr,total){
   });
 }
 
-/* ── dual-axis mixed chart (bars + line overlay) ── */
+/* ── dual-axis: bars (P&L, per-bar color) + markers (Win%) ── */
 function apexDual(id,labels,barData,lineData,barName,lineName){
   const tc=themeColors();
-  const barColors=barData.map(v=>v>=0?COLORS.win+'cc':COLORS.loss+'cc');
+  // Per-bar color using fillColor in data objects — correct API for mixed charts
+  const barSeries=barData.map(function(v,i){
+    return{x:labels[i],y:v,fillColor:v>=0?COLORS.win+'dd':COLORS.loss+'dd',strokeColor:'transparent'};
+  });
   return mkApex(id,{
-    series:[{name:barName||'P&L',type:'bar',data:barData},{name:lineName||'Win %',type:'line',data:lineData}],
-    chart:{background:'transparent',fontFamily:'Inter, sans-serif',type:'bar',height:'100%',toolbar:{show:false},zoom:{enabled:false},animations:{enabled:true,speed:350}},
+    series:[
+      {name:barName||'P&L',type:'bar',data:barSeries},
+      {name:lineName||'Win %',type:'line',data:lineData}
+    ],
+    chart:{background:'transparent',fontFamily:'Inter, sans-serif',type:'line',height:'100%',
+      toolbar:{show:false},zoom:{enabled:false},animations:{enabled:true,speed:400},
+      dropShadow:{enabled:false}},
     theme:{mode:isDark()?'dark':'light'},
     dataLabels:{enabled:false},
     stroke:{width:[0,2.5],curve:'smooth'},
-    plotOptions:{bar:{borderRadius:5,columnWidth:'52%',borderRadiusApplication:'end',distributed:true}},
-    colors:barColors,
-    fill:{opacity:[0.85,1]},
-    markers:{size:[0,4],strokeWidth:0,hover:{size:6}},
-    xaxis:{categories:labels,axisBorder:{show:false},axisTicks:{show:false},labels:{style:{fontFamily:'Inter',fontSize:'10px',fontWeight:500,colors:tc.tick}}},
+    plotOptions:{bar:{borderRadius:5,columnWidth:'55%',borderRadiusApplication:'end'}},
+    colors:[COLORS.win,COLORS.ny],
+    fill:{opacity:[0.9,1]},
+    markers:{size:[0,5],strokeWidth:0,hover:{size:7},colors:[COLORS.ny]},
+    xaxis:{
+      type:'category',categories:labels,
+      axisBorder:{show:false},axisTicks:{show:false},
+      labels:{style:{fontFamily:'Inter',fontSize:'10px',fontWeight:500,colors:tc.tick}}
+    },
     yaxis:[
-      {seriesName:barName||'P&L',title:{text:undefined},labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},formatter:v=>'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0})},axisBorder:{show:false},axisTicks:{show:false}},
-      {seriesName:lineName||'Win %',opposite:true,min:0,max:100,title:{text:undefined},labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:COLORS.ny},formatter:v=>v+'%'},axisBorder:{show:false},axisTicks:{show:false}}
+      {
+        title:{text:undefined},
+        labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},
+          formatter:function(v){if(v==null)return'';return(v>=0?'':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});}},
+        axisBorder:{show:false},axisTicks:{show:false}
+      },
+      {
+        opposite:true,min:0,max:100,
+        title:{text:undefined},
+        labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:COLORS.ny},
+          formatter:function(v){return Number(v).toFixed(0)+'%';}},
+        axisBorder:{show:false},axisTicks:{show:false}
+      }
     ],
-    grid:{borderColor:tc.grid,strokeDashArray:0,xaxis:{lines:{show:false}},yaxis:{lines:{show:true}},padding:{top:0,right:8,bottom:0,left:4}},
-    legend:{show:true,position:'top',fontFamily:'Inter',fontSize:'11px',fontWeight:600,labels:{colors:tc.legend},markers:{width:9,height:9,radius:3},itemMargin:{horizontal:12,vertical:2}},
-    tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono',fontSize:'11px'},shared:true,intersect:false,y:[{formatter:v=>'$'+(v>=0?'+':'')+Number(v).toLocaleString('en-US',{maximumFractionDigits:0})},{formatter:v=>Number(v).toFixed(0)+'%'}]},
+    grid:{borderColor:tc.grid,strokeDashArray:3,xaxis:{lines:{show:false}},
+      yaxis:{lines:{show:true}},padding:{top:4,right:10,bottom:0,left:4}},
+    legend:{show:true,position:'top',fontFamily:'Inter',fontSize:'11px',fontWeight:600,
+      labels:{colors:tc.legend},markers:{width:9,height:9,radius:3},
+      itemMargin:{horizontal:12,vertical:2}},
+    tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono',fontSize:'11px'},
+      shared:true,intersect:false,
+      y:[
+        {formatter:function(v){if(v==null)return'';return(v>=0?'+':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});}},
+        {formatter:function(v){if(v==null)return'';return Number(v).toFixed(0)+'%';}}
+      ]
+    },
   });
 }
 
@@ -1760,16 +1801,56 @@ function renderDashboard(){
   if(tvData.length) mkTv('ch-equity',tvData,cum>=0);
   else destroyChart('ch-equity');
 
-  // ── P&L by Day of Week — dual axis (ApexCharts) ──
-  const dowNames=['Mon','Tue','Wed','Thu','Fri'];
-  const dowPnl=[0,0,0,0,0],dowN=[0,0,0,0,0],dowW=[0,0,0,0,0];
+  // ── P&L by Day of Week (bars only, no line) ──
+  var _dowPnl=[0,0,0,0,0];
   sorted.forEach(function(t){
-    if(!t.date)return;
-    var dow=new Date(t.date+'T12:00').getDay();
-    if(dow>=1&&dow<=5){dowPnl[dow-1]=parseFloat((dowPnl[dow-1]+t.pnl).toFixed(2));dowN[dow-1]++;if(t.pnl>0)dowW[dow-1]++;}
+    if(!t.date||typeof t.pnl!=='number')return;
+    var p=t.date.split('-');
+    var utcDay=new Date(Date.UTC(+p[0],+p[1]-1,+p[2])).getUTCDay();
+    if(utcDay>=1&&utcDay<=5)
+      _dowPnl[utcDay-1]=parseFloat((_dowPnl[utcDay-1]+(t.pnl||0)).toFixed(2));
   });
-  var dowWr=dowN.map(function(n,i){return n>0?Math.round(dowW[i]/n*100):0;});
-  apexDual('ch-daily',dowNames,dowPnl,dowWr,'Net P&L','Win %');
+  destroyChart('ch-daily');
+  (function(){
+    var el=$('ch-daily');
+    if(!el)return;
+    el.innerHTML='';
+    var tc=themeColors();
+    var labels=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    var barData=_dowPnl.map(function(v,i){
+      return{x:labels[i],y:v,fillColor:v>=0?COLORS.win+'e0':COLORS.loss+'e0',strokeColor:'transparent'};
+    });
+    new ApexCharts(el,{
+      series:[{name:'Net P&L',data:barData}],
+      chart:{type:'bar',background:'transparent',fontFamily:'Inter, sans-serif',
+        height:'100%',toolbar:{show:false},zoom:{enabled:false},
+        animations:{enabled:true,speed:400}},
+      theme:{mode:isDark()?'dark':'light'},
+      dataLabels:{enabled:false},
+      stroke:{show:false},
+      plotOptions:{bar:{borderRadius:6,columnWidth:'52%',borderRadiusApplication:'end'}},
+      colors:[COLORS.win],
+      xaxis:{type:'category',categories:labels,axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontFamily:'Inter',fontSize:'11px',fontWeight:600,colors:tc.tick}}},
+      yaxis:{axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},
+          formatter:function(v){
+            if(v==null)return'';
+            return(v>=0?'':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});
+          }}},
+      grid:{borderColor:tc.grid,strokeDashArray:3,
+        xaxis:{lines:{show:false}},yaxis:{lines:{show:true}},
+        padding:{top:4,right:8,bottom:0,left:4}},
+      legend:{show:false},
+      tooltip:{theme:isDark()?'dark':'light',
+        style:{fontFamily:'JetBrains Mono',fontSize:'11px'},
+        y:{formatter:function(v){
+          if(v==null)return'';
+          return(v>=0?'+':'')+' $'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});
+        }}}
+    }).render();
+    S.charts['ch-daily']={destroy:function(){try{el.innerHTML='';}catch(e){}}};
+  })();
 
   // ── Monthly P&L — dual axis (ApexCharts) ──
   const byMonth={},moWrMap={};
@@ -1783,7 +1864,34 @@ function renderDashboard(){
   const moKeys=Object.keys(byMonth).sort();
   const moLabels=moKeys.map(function(k){var p=k.split('-');var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return(mn[parseInt(p[1],10)-1]||p[1])+" '"+p[0].slice(2);});
   var moWrVals=moKeys.map(function(k){var d=moWrMap[k];return d&&d.n>0?Math.round(d.w/d.n*100):0;});
-  apexDual('ch-monthly-pnl',moLabels,moKeys.map(function(k){return parseFloat(byMonth[k].toFixed(2));}),moWrVals,'Monthly P&L','Win %');
+  // Monthly P&L — bars only, no line
+  var moPnlVals=moKeys.map(function(k){return parseFloat(byMonth[k].toFixed(2));});
+  mkApex('ch-monthly-pnl',(function(){
+    var tc=themeColors();
+    var moBars=moPnlVals.map(function(v,i){
+      return{x:moLabels[i],y:v,fillColor:v>=0?COLORS.win+'dd':COLORS.loss+'dd',strokeColor:'transparent'};
+    });
+    return{
+      series:[{name:'Monthly P&L',data:moBars}],
+      chart:{background:'transparent',fontFamily:'Inter, sans-serif',type:'bar',height:'100%',
+        toolbar:{show:false},zoom:{enabled:false},animations:{enabled:true,speed:400}},
+      theme:{mode:isDark()?'dark':'light'},
+      dataLabels:{enabled:false},
+      stroke:{show:false,width:0},
+      plotOptions:{bar:{borderRadius:5,columnWidth:'60%',borderRadiusApplication:'end'}},
+      colors:[COLORS.win],
+      xaxis:{type:'category',categories:moLabels,axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontFamily:'Inter',fontSize:'10px',fontWeight:500,colors:tc.tick}}},
+      yaxis:{labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},
+        formatter:function(v){if(v==null)return'';return(v>=0?'':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});}},
+        axisBorder:{show:false},axisTicks:{show:false}},
+      grid:{borderColor:tc.grid,strokeDashArray:3,xaxis:{lines:{show:false}},
+        yaxis:{lines:{show:true}},padding:{top:4,right:8,bottom:0,left:4}},
+      legend:{show:false},
+      tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono',fontSize:'11px'},
+        y:{formatter:function(v){if(v==null)return'';return(v>=0?'+':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});}}}
+    };
+  })());
 
   // ── Win/Loss Donut (ApexCharts with center label) ──
   const be_count=Math.max(0,s.t-s.wins-s.losses);
@@ -2255,9 +2363,17 @@ function renderAnOverview(data){
   });
   // ── Analytics Equity Curve (TradingView + P&L/% toggle) ──
   var tvAnData=buildTvData(sorted);
-  if(eqMode==='pct'&&tvAnData.length>1){var base0=tvAnData[0].value||1;tvAnData=tvAnData.map(function(p){return{time:p.time,value:parseFloat(((p.value/Math.abs(base0))*100).toFixed(2))};});}
   var finalEq=eqD.length?eqD[eqD.length-1]:0;
-  if(tvAnData.length) mkTv('an-equity',tvAnData,finalEq>=0); else destroyChart('an-equity');
+  var isPct=eqMode==='pct';
+  if(isPct&&tvAnData.length){
+    // % return = cumPnL / accountSize * 100  (not divided by first point)
+    var acctSize=S.settings.accountSize||50000;
+    tvAnData=tvAnData.map(function(p){
+      return{time:p.time,value:parseFloat((p.value/acctSize*100).toFixed(3))};
+    });
+  }
+  // Pass custom Y-axis formatter for pct mode into mkTv via override
+  if(tvAnData.length) mkTv('an-equity',tvAnData,finalEq>=0,isPct); else destroyChart('an-equity');
   // Sync toggle buttons
   var btnPnl=$('eq-toggle-pnl'),btnPct=$('eq-toggle-pct');
   if(btnPnl&&btnPct){
@@ -2369,41 +2485,99 @@ function renderAnTags(data){
 }
 
 function renderAnTime(data){
-  // Half-hour buckets: key = "HH:MM" e.g. "09:30", "10:00", "10:30"
+  // Half-hour buckets: key = "HH:MM" 24-h e.g. "09:30", "10:00"
   const buckets={};
   function getBucket(timeStr){
     if(!timeStr) return null;
     const parts=timeStr.split(':');
-    const h=parseInt(parts[0])||0;
-    const m=parseInt(parts[1])||0;
+    const h=parseInt(parts[0],10);
+    const m=parseInt(parts[1],10)||0;
+    if(isNaN(h)) return null;
     const halfHour=m<30?0:30;
-    return `${String(h).padStart(2,'0')}:${String(halfHour).padStart(2,'0')}`;
+    return String(h).padStart(2,'0')+':'+String(halfHour).padStart(2,'0');
   }
-  data.forEach(t=>{
+  // Helper: add 30 min to a HH:MM key
+  function nextBucket(key){
+    var p=key.split(':'),h=parseInt(p[0],10),m=parseInt(p[1],10);
+    m+=30; if(m>=60){m=0;h+=1;} if(h>=24){h=0;}
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  }
+  data.forEach(function(t){
     if(!t.entryTime) return;
-    const bk=getBucket(t.entryTime);
+    var bk=getBucket(t.entryTime);
     if(!bk) return;
     if(!buckets[bk]) buckets[bk]={pnl:0,n:0,w:0};
     buckets[bk].pnl+=t.pnl; buckets[bk].n++; if(t.pnl>0)buckets[bk].w++;
   });
-  // Sort buckets chronologically
-  const bkeys=Object.keys(buckets).sort();
+  var bkeys=Object.keys(buckets).sort();
   if(!bkeys.length){
-    ['an-time-pnl','an-time-wr'].forEach(id=>destroyChart(id));
+    ['an-time-pnl','an-time-wr'].forEach(function(id){destroyChart(id);});
     return;
   }
-  const hlabels=bkeys.map(k=>{
-    const [hh,mm]=k.split(':');
-    const h=parseInt(hh);
-    const suffix=h<12?'AM':'PM';
-    const displayH=h>12?h-12:h===0?12:h;
-    return `${displayH}:${mm}${suffix}`;
-  });
-  // P&L chart
-  // ── Time-of-Day P&L (ApexCharts bar) ──
-  apexBar('an-time-pnl',hlabels,bkeys.map(k=>parseFloat(buckets[k].pnl.toFixed(2))),'P&L');
-  // ── Time-of-Day Win Rate (ApexCharts %) ──
-  apexWrBar('an-time-wr',hlabels,bkeys.map(k=>buckets[k].n?Math.round(buckets[k].w/buckets[k].n*100):0),false);
+  // X-axis labels: 24-h start of bucket e.g. "09:30"
+  var hlabels=bkeys.map(function(k){return k;});
+  // Tooltip interval ranges: "09:30–10:00"
+  var hRanges=bkeys.map(function(k){return k+'–'+nextBucket(k);});
+  var pnlVals=bkeys.map(function(k){return parseFloat(buckets[k].pnl.toFixed(2));});
+  var wrVals=bkeys.map(function(k){return buckets[k].n?Math.round(buckets[k].w/buckets[k].n*100):0;});
+  // ── Time-of-Day P&L with interval tooltip ──
+  var tc=themeColors();
+  var pnlBase=apexBase();
+  mkApex('an-time-pnl',Object.assign({},pnlBase,{
+    series:[{name:'P&L',data:pnlVals}],
+    chart:Object.assign({},pnlBase.chart,{type:'bar'}),
+    plotOptions:{bar:{borderRadius:4,columnWidth:'70%',borderRadiusApplication:'end',distributed:true}},
+    colors:pnlVals.map(function(v){return v>=0?COLORS.win:COLORS.loss;}),
+    xaxis:Object.assign({},pnlBase.xaxis,{
+      categories:hlabels,
+      labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tick},rotate:-45,rotateAlways:false}
+    }),
+    yaxis:{labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},formatter:function(v){return(v>=0?'':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});}}},
+    tooltip:Object.assign({},pnlBase.tooltip,{
+      custom:function(o){
+        var idx=o.dataPointIndex;
+        var v=pnlVals[idx];
+        var range=hRanges[idx]||hlabels[idx];
+        var n=buckets[bkeys[idx]].n;
+        var sign=v>=0?'+':'-';
+        var col=v>=0?COLORS.win:COLORS.loss;
+        return '<div style="padding:10px 13px;font-family:JetBrains Mono,monospace;font-size:11px;background:'+tc.tooltipBg+';border:1px solid '+tc.tooltipBorder+';border-radius:8px">'+
+          '<div style="font-family:Inter,sans-serif;font-size:11px;font-weight:600;color:'+tc.tooltipTitle+';margin-bottom:5px">'+range+'</div>'+
+          '<div style="color:'+col+'">P&amp;L: '+sign+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0})+'</div>'+
+          '<div style="color:'+tc.tooltipBody+';margin-top:2px">Trades: '+n+'</div>'+
+          '</div>';
+      }
+    }),
+    legend:{show:false},
+  }));
+  // ── Time-of-Day Win Rate with interval tooltip ──
+  var wrBase=apexBase();
+  mkApex('an-time-wr',Object.assign({},wrBase,{
+    series:[{name:'Win %',data:wrVals}],
+    chart:Object.assign({},wrBase.chart,{type:'bar'}),
+    plotOptions:{bar:{borderRadius:4,columnWidth:'70%',borderRadiusApplication:'end',distributed:true}},
+    colors:wrVals.map(function(v){return v>=60?COLORS.win:v>=40?COLORS.amber:COLORS.loss;}),
+    xaxis:Object.assign({},wrBase.xaxis,{
+      categories:hlabels,
+      labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tick},rotate:-45,rotateAlways:false}
+    }),
+    yaxis:{min:0,max:100,labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},formatter:function(v){return v+'%';}}},
+    tooltip:Object.assign({},wrBase.tooltip,{
+      custom:function(o){
+        var idx=o.dataPointIndex;
+        var v=wrVals[idx];
+        var range=hRanges[idx]||hlabels[idx];
+        var n=buckets[bkeys[idx]].n;
+        var col=v>=60?COLORS.win:v>=40?COLORS.amber:COLORS.loss;
+        return '<div style="padding:10px 13px;font-family:JetBrains Mono,monospace;font-size:11px;background:'+tc.tooltipBg+';border:1px solid '+tc.tooltipBorder+';border-radius:8px">'+
+          '<div style="font-family:Inter,sans-serif;font-size:11px;font-weight:600;color:'+tc.tooltipTitle+';margin-bottom:5px">'+range+'</div>'+
+          '<div style="color:'+col+'">Win Rate: '+v+'%</div>'+
+          '<div style="color:'+tc.tooltipBody+';margin-top:2px">Trades: '+n+'</div>'+
+          '</div>';
+      }
+    }),
+    legend:{show:false},
+  }));
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -2494,23 +2668,57 @@ function renderAnWeekday(data){
   var DOW=['Monday','Tuesday','Wednesday','Thursday','Friday'];
   var stats=DOW.map(function(){return{pnl:0,n:0,w:0};});
   data.forEach(function(t){
-    if(!t.date)return;
-    var d=new Date(t.date+'T12:00');
-    var dow=d.getDay(); // 0=Sun
-    if(dow>=1&&dow<=5){
-      stats[dow-1].pnl=parseFloat((stats[dow-1].pnl+t.pnl).toFixed(2));
-      stats[dow-1].n++;
-      if(t.pnl>0)stats[dow-1].w++;
+    if(!t.date||typeof t.pnl!=='number')return;
+    var p=t.date.split('-');
+    var utcDay=new Date(Date.UTC(+p[0],+p[1]-1,+p[2])).getUTCDay();
+    if(utcDay>=1&&utcDay<=5){
+      var idx=utcDay-1;
+      stats[idx].pnl=parseFloat((stats[idx].pnl+(t.pnl||0)).toFixed(2));
+      stats[idx].n++;
+      if(t.pnl>0)stats[idx].w++;
     }
   });
-  var wrVals=stats.map(function(s){return s.n>0?Math.round(s.w/s.n*100):0;});
-  var pnlVals=stats.map(function(s){return s.pnl;});
-  var isDark=document.documentElement.getAttribute('data-theme')!=='light';
-  // Dual-axis chart: bars = P&L, line = Win Rate
+  // ── Bars-only chart: P&L per day, no line, no win rate ──
   destroyChart('an-weekday-chart');
-  if($('an-weekday-chart')){
-    apexDual('an-weekday-chart',DOW,pnlVals,wrVals,'Net P&L','Win %');
-  }
+  (function(){
+    var el=$('an-weekday-chart');
+    if(!el)return;
+    el.innerHTML='';
+    var tc=themeColors();
+    var barData=stats.map(function(s,i){
+      return{x:DOW[i],y:s.pnl,fillColor:s.pnl>=0?COLORS.win+'e0':COLORS.loss+'e0',strokeColor:'transparent'};
+    });
+    new ApexCharts(el,{
+      series:[{name:'Net P&L',data:barData}],
+      chart:{type:'bar',background:'transparent',fontFamily:'Inter, sans-serif',
+        height:'100%',toolbar:{show:false},zoom:{enabled:false},
+        animations:{enabled:true,speed:400}},
+      theme:{mode:isDark()?'dark':'light'},
+      dataLabels:{enabled:false},
+      stroke:{show:false},
+      plotOptions:{bar:{borderRadius:6,columnWidth:'48%',borderRadiusApplication:'end'}},
+      colors:[COLORS.win],
+      xaxis:{type:'category',categories:DOW,axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontFamily:'Inter',fontSize:'11px',fontWeight:600,colors:tc.tick}}},
+      yaxis:{axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},
+          formatter:function(v){
+            if(v==null)return'';
+            return(v>=0?'':'-')+'$'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});
+          }}},
+      grid:{borderColor:tc.grid,strokeDashArray:3,
+        xaxis:{lines:{show:false}},yaxis:{lines:{show:true}},
+        padding:{top:4,right:8,bottom:0,left:4}},
+      legend:{show:false},
+      tooltip:{theme:isDark()?'dark':'light',
+        style:{fontFamily:'JetBrains Mono',fontSize:'11px'},
+        y:{formatter:function(v){
+          if(v==null)return'';
+          return(v>=0?'+':'')+' $'+Number(Math.abs(v)).toLocaleString('en-US',{maximumFractionDigits:0});
+        }}}
+    }).render();
+    S.charts['an-weekday-chart']={destroy:function(){try{el.innerHTML='';}catch(e){}}};
+  })();
     // KPI cards for best/worst day
   var best=stats.reduce(function(b,s,i){return s.pnl>b.pnl?{pnl:s.pnl,i:i}:b;},{pnl:-Infinity,i:0});
   var worst=stats.reduce(function(b,s,i){return s.pnl<b.pnl?{pnl:s.pnl,i:i}:b;},{pnl:Infinity,i:0});
