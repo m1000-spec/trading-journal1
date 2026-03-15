@@ -6,7 +6,10 @@
 <title>M1000 Journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<!-- ApexCharts v3.45 — analytics & bar/donut charts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js"></script>
+<!-- TradingView Lightweight Charts v4.1 — equity curve -->
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 /* ╔══════════════════════════════════════════════════╗
    M1000 JOURNAL · DESIGN SYSTEM
@@ -673,22 +676,22 @@ tbody tr:hover td { background: var(--bg3); }
       </div>
       <div id="dash-equity-badge"></div>
     </div>
-    <div class="chart-wrap h320"><canvas id="ch-equity"></canvas></div>
+    <div class="chart-wrap h320"><div id="ch-equity" style="width:100%;height:100%"></div></div>
   </div>
 
   <!-- ROW 3: Daily P&L + Monthly P&L + Win/Loss -->
   <div class="dash-mid-grid mb20">
     <div class="card">
       <div class="card-lbl" style="margin-bottom:14px">P&amp;L by Day of Week</div>
-      <div class="chart-wrap h240"><canvas id="ch-daily"></canvas></div>
+      <div class="chart-wrap h240"><div id="ch-daily" style="width:100%;height:100%"></div></div>
     </div>
     <div class="card">
       <div class="card-lbl" style="margin-bottom:14px">Monthly P&amp;L</div>
-      <div class="chart-wrap h240"><canvas id="ch-monthly-pnl"></canvas></div>
+      <div class="chart-wrap h240"><div id="ch-monthly-pnl" style="width:100%;height:100%"></div></div>
     </div>
     <div class="card">
       <div class="card-lbl" style="margin-bottom:14px">Win / Loss Split</div>
-      <div style="position:relative;height:200px"><canvas id="ch-wl"></canvas></div>
+      <div id="ch-wl" style="width:100%;height:100%"></div>
     </div>
   </div>
 
@@ -696,11 +699,11 @@ tbody tr:hover td { background: var(--bg3); }
   <div class="dash-bot-grid mb20">
     <div class="card">
       <div class="card-lbl" style="margin-bottom:14px">By Session</div>
-      <div class="chart-wrap h200"><canvas id="ch-sess"></canvas></div>
+      <div class="chart-wrap h200"><div id="ch-sess" style="width:100%;height:100%"></div></div>
     </div>
     <div class="card">
       <div class="card-lbl" style="margin-bottom:14px">By Setup</div>
-      <div class="chart-wrap h200"><canvas id="ch-setup"></canvas></div>
+      <div class="chart-wrap h200"><div id="ch-setup" style="width:100%;height:100%"></div></div>
     </div>
     <div class="card">
       <div class="card-lbl mb8">Streaks &amp; Compliance</div>
@@ -824,30 +827,30 @@ tbody tr:hover td { background: var(--bg3); }
             <button id="eq-toggle-pct" class="btn btn-secondary btn-xs" onclick="setEqMode('pct')">% Return</button>
           </div>
         </div>
-        <div class="chart-wrap h260"><canvas id="an-equity"></canvas></div>
+        <div class="chart-wrap h260"><div id="an-equity" style="width:100%;height:100%"></div></div>
       </div>
       <div class="card">
         <div class="card-lbl">Drawdown</div>
-        <div class="chart-wrap h260"><canvas id="an-dd"></canvas></div>
+        <div class="chart-wrap h260"><div id="an-dd" style="width:100%;height:100%"></div></div>
       </div>
     </div>
     <div class="g4 mb12" id="an-kpis"></div>
     <div class="g2">
       <div class="card">
         <div class="card-lbl">Instrument Performance</div>
-        <div class="chart-wrap h220"><canvas id="an-inst"></canvas></div>
+        <div class="chart-wrap h220"><div id="an-inst" style="width:100%;height:100%"></div></div>
       </div>
       <div class="card">
         <div class="card-lbl">Win Rate by Month</div>
-        <div class="chart-wrap h220"><canvas id="an-monthly"></canvas></div>
+        <div class="chart-wrap h220"><div id="an-monthly" style="width:100%;height:100%"></div></div>
       </div>
     </div>
   </div>
   <div id="an-sessions" class="tab-pane">
     <div class="g3 mb12" id="an-sess-kpis"></div>
     <div class="g2 mb12">
-      <div class="card"><div class="card-lbl" style="margin-bottom:14px">P&amp;L by Session</div><div class="chart-wrap h260"><canvas id="an-sess-pnl"></canvas></div></div>
-      <div class="card"><div class="card-lbl" style="margin-bottom:14px">Win Rate by Session (%)</div><div class="chart-wrap h260"><canvas id="an-sess-wr"></canvas></div></div>
+      <div class="card"><div class="card-lbl" style="margin-bottom:14px">P&amp;L by Session</div><div class="chart-wrap h260"><div id="an-sess-pnl" style="width:100%;height:100%"></div></div></div>
+      <div class="card"><div class="card-lbl" style="margin-bottom:14px">Win Rate by Session (%)</div><div class="chart-wrap h260"><div id="an-sess-wr" style="width:100%;height:100%"></div></div></div>
     </div>
     <!-- Session comparison panel (PB Journal style) -->
     <div class="card mb12">
@@ -864,11 +867,11 @@ tbody tr:hover td { background: var(--bg3); }
     <div class="g2 mb12">
       <div class="card">
         <div class="card-lbl" style="margin-bottom:14px">Setup Performance — P&amp;L</div>
-        <div class="chart-wrap h300"><canvas id="an-setup-pnl"></canvas></div>
+        <div class="chart-wrap h300"><div id="an-setup-pnl" style="width:100%;height:100%"></div></div>
       </div>
       <div class="card">
         <div class="card-lbl" style="margin-bottom:14px">Setup Win Rate (%)</div>
-        <div class="chart-wrap h300"><canvas id="an-setup-wr"></canvas></div>
+        <div class="chart-wrap h300"><div id="an-setup-wr" style="width:100%;height:100%"></div></div>
       </div>
     </div>
     <div class="card">
@@ -878,7 +881,7 @@ tbody tr:hover td { background: var(--bg3); }
   </div>
   <div id="an-tags" class="tab-pane">
     <div class="g2">
-      <div class="card"><div class="card-lbl">Tag P&amp;L Impact</div><div class="chart-wrap h300"><canvas id="an-tag-pnl"></canvas></div></div>
+      <div class="card"><div class="card-lbl">Tag P&amp;L Impact</div><div class="chart-wrap h300"><div id="an-tag-pnl" style="width:100%;height:100%"></div></div></div>
       <div class="card"><div class="card-lbl">Tag Usage &amp; Win Rate</div><div id="an-tag-table"></div></div>
     </div>
   </div>
@@ -889,11 +892,11 @@ tbody tr:hover td { background: var(--bg3); }
     <div class="g2">
       <div class="card">
         <div class="card-lbl" style="margin-bottom:14px">P&amp;L by 30-Min Interval</div>
-        <div class="chart-wrap h300"><canvas id="an-time-pnl"></canvas></div>
+        <div class="chart-wrap h300"><div id="an-time-pnl" style="width:100%;height:100%"></div></div>
       </div>
       <div class="card">
         <div class="card-lbl" style="margin-bottom:14px">Win Rate by 30-Min Interval (%)</div>
-        <div class="chart-wrap h300"><canvas id="an-time-wr"></canvas></div>
+        <div class="chart-wrap h300"><div id="an-time-wr" style="width:100%;height:100%"></div></div>
       </div>
     </div>
   </div>
@@ -905,7 +908,7 @@ tbody tr:hover td { background: var(--bg3); }
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="card-lbl" style="margin-bottom:0">P&amp;L &amp; Win Rate by Day of Week</div>
       </div>
-      <div class="chart-wrap h300"><canvas id="an-weekday-chart"></canvas></div>
+      <div class="chart-wrap h300"><div id="an-weekday-chart" style="width:100%;height:100%"></div></div>
     </div>
     <div class="g2 mb12" id="an-weekday-kpis"></div>
     <div class="card">
@@ -1490,132 +1493,241 @@ function toast(msg,type='success'){
 }
 
 /* ═══════════════════════════════════════════════════════
-   CHART HELPERS
+   CHART ENGINE — ApexCharts + TradingView Lightweight
+   Equity curves → TradingView · All other charts → ApexCharts
 ═══════════════════════════════════════════════════════ */
-function destroyChart(key){ if(S.charts[key]){S.charts[key].destroy();delete S.charts[key];} }
-function mkChart(id,cfg){ destroyChart(id); const c=$(id); if(!c) return; S.charts[id]=new Chart(c,cfg); return S.charts[id]; }
+
 const COLORS={win:'#22c55e',loss:'#ef4444',ny:'#3b82f6',asia:'#0ea5e9',london:'#64748b',amber:'#f59e0b',neutral:'#64748b'};
 
-// Crosshair plugin — vertical for line/bar, horizontal for horizontal-bar charts
-const CrosshairPlugin={id:'crosshair',afterDraw(chart){
-  if(!chart.tooltip||!chart.tooltip._active||!chart.tooltip._active.length)return;
-  const ctx=chart.ctx,el=chart.tooltip._active[0].element;
-  const{top,bottom,left,right}=chart.chartArea;
-  const isHorizontal=chart.options&&chart.options.indexAxis==='y';
-  ctx.save();
-  ctx.lineWidth=1;ctx.strokeStyle='rgba(59,130,246,.2)';ctx.setLineDash([4,4]);
-  ctx.beginPath();
-  if(isHorizontal){
-    // Horizontal crosshair for horizontal bar charts
-    const y=el.y;ctx.moveTo(left,y);ctx.lineTo(right,y);
-  } else {
-    // Vertical crosshair for standard charts
-    const x=el.x;ctx.moveTo(x,top);ctx.lineTo(x,bottom);
-  }
-  ctx.stroke();ctx.restore();
-}};
-Chart.register(CrosshairPlugin);
-
-function chartOpts(extra){
-  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-  const gc=isDark?'rgba(35,40,54,.8)':'rgba(228,231,238,.8)';
-  const tc=isDark?'#3d4a63':'#94a3b8';
-  const tooltipBg=isDark?'#151820':'#ffffff';
-  const tooltipBorder=isDark?'#232836':'#e4e7ee';
-  const base={
-    responsive:true,
-    maintainAspectRatio:false,
-    animation:{duration:350},
-    plugins:{
-      legend:{display:false},
-      tooltip:{
-        mode:'index',intersect:false,
-        backgroundColor:tooltipBg,
-        borderColor:tooltipBorder,
-        borderWidth:1,
-        titleColor:isDark?'#e2e8f0':'#0f172a',
-        bodyColor:isDark?'#6b7fa3':'#475569',
-        titleFont:{family:'Inter',size:12,weight:'600'},
-        bodyFont:{family:'JetBrains Mono',size:11},
-        padding:12,
-        cornerRadius:8,
-        boxPadding:4,
-        callbacks:{
-          label:function(ctx){
-            const v=ctx.parsed?.y??ctx.parsed;
-            if(v==null||v===undefined)return'';
-            const sign=v>=0?'+':'';
-            return '  $'+sign+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});
-          }
-        }
-      }
-    },
-    scales:{
-      x:{
-        ticks:{
-          color:tc,
-          font:{family:'Inter',size:10,weight:'500'},
-          maxTicksLimit:10,
-          maxRotation:30,
-          autoSkip:true
-        },
-        grid:{color:gc,lineWidth:.7},
-        border:{color:isDark?'#232836':'#e4e7ee'}
-      },
-      y:{
-        ticks:{
-          color:tc,
-          font:{family:'JetBrains Mono',size:10},
-          callback:function(v){return v!=null?'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):''}
-        },
-        grid:{color:gc,lineWidth:.7},
-        border:{color:isDark?'#232836':'#e4e7ee',dash:[3,3]}
-      }
-    }
+/* ── helpers ── */
+function isDark(){return document.documentElement.getAttribute('data-theme')!=='light';}
+function themeColors(){
+  const dark=isDark();
+  return{
+    bg:dark?'transparent':'transparent',
+    grid:dark?'rgba(35,40,54,.7)':'rgba(228,231,238,.9)',
+    tick:dark?'#3d4a63':'#94a3b8',
+    tickMono:dark?'#3d4a63':'#94a3b8',
+    tooltipBg:dark?'#151820':'#ffffff',
+    tooltipBorder:dark?'#232836':'#e4e7ee',
+    tooltipTitle:dark?'#e2e8f0':'#0f172a',
+    tooltipBody:dark?'#64748b':'#475569',
+    legend:dark?'#64748b':'#475569',
   };
-  return Object.assign(base,extra||{});
 }
 
-function chartOptsPct(extra){
-  const o=chartOpts(extra);
-  o.scales.y=Object.assign({},o.scales.y,{
-    min:0,max:100,
-    ticks:Object.assign({},o.scales.y.ticks,{callback:function(v){return v+'%';}})
-  });
-  if(o.plugins&&o.plugins.tooltip&&o.plugins.tooltip.callbacks){
-    o.plugins.tooltip.callbacks.label=function(ctx){
-      const v=ctx.parsed?.y??ctx.parsed;
-      return (v!=null&&v!==undefined)?' '+Number(v).toFixed(0)+'%':'';
-    };
+/* ── destroy any chart ── */
+function destroyChart(key){
+  if(!S.charts[key])return;
+  const c=S.charts[key];
+  try{if(c&&typeof c.destroy==='function')c.destroy();}catch(e){}
+  delete S.charts[key];
+}
+
+/* ── mount ApexCharts ── */
+function mkApex(id,opts){
+  destroyChart(id);
+  const el=$(id); if(!el)return null;
+  el.innerHTML='';
+  const chart=new ApexCharts(el,opts);
+  chart.render();
+  S.charts[id]={destroy:()=>{try{chart.destroy();}catch(e){}}};
+  return chart;
+}
+
+/* ── mount TradingView Lightweight Chart (equity curve) ── */
+function mkTv(id,tvData,isPositive){
+  // Guard: fall back to ApexCharts area if TradingView not loaded
+  if(typeof LightweightCharts==='undefined'){
+    var labels=tvData.map(function(p){return p.time;});
+    var vals=tvData.map(function(p){return p.value;});
+    apexArea(id,labels,vals,isPositive?COLORS.win:COLORS.loss,'Equity',function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});});
+    return null;
   }
-  return o;
+  destroyChart(id);
+  const el=$(id); if(!el)return null;
+  el.innerHTML='';
+  const dark=isDark();
+  const gc=dark?'rgba(35,40,54,.6)':'rgba(228,231,238,.9)';
+  const tc=dark?'#3d4a63':'#94a3b8';
+  const lc=isPositive?COLORS.win:COLORS.loss;
+  const chart=LightweightCharts.createChart(el,{
+    width:el.offsetWidth||700,
+    height:el.offsetHeight||260,
+    layout:{
+      background:{type:LightweightCharts.ColorType?LightweightCharts.ColorType.Solid:'solid',color:'transparent'},
+      textColor:tc,fontFamily:'Inter, sans-serif',fontSize:11
+    },
+    grid:{
+      vertLines:{color:gc,style:1},
+      horzLines:{color:gc,style:1}
+    },
+    crosshair:{
+      mode:0,
+      vertLine:{color:COLORS.ny+'50',labelBackgroundColor:COLORS.ny},
+      horzLine:{color:COLORS.ny+'50',labelBackgroundColor:COLORS.ny}
+    },
+    rightPriceScale:{borderColor:dark?'#232836':'#e4e7ee',scaleMargins:{top:0.1,bottom:0.08}},
+    timeScale:{borderColor:dark?'#232836':'#e4e7ee',timeVisible:false,fixLeftEdge:true,fixRightEdge:true},
+    handleScroll:false,handleScale:false,
+  });
+  const series=chart.addAreaSeries({
+    lineColor:lc,
+    topColor:lc+'30',
+    bottomColor:lc+'00',
+    lineWidth:2,
+    crosshairMarkerVisible:true,
+    crosshairMarkerRadius:4,
+    crosshairMarkerBackgroundColor:lc,
+    priceFormat:{type:'price',precision:0,minMove:1},
+    priceLineVisible:false,
+    lastValueVisible:true,
+  });
+  if(tvData.length)series.setData(tvData);
+  chart.timeScale().fitContent();
+  const ro=new ResizeObserver(function(){if(el.offsetWidth>0)chart.applyOptions({width:el.offsetWidth});});
+  ro.observe(el);
+  S.charts[id]={destroy:function(){ro.disconnect();try{chart.remove();}catch(e){}}};
+  return{chart,series};
 }
 
-function chartOptsPolar(extra){
-  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-  return Object.assign({
-    responsive:true,
-    maintainAspectRatio:false,
-    animation:{duration:400},
-    plugins:{
-      legend:{
-        display:true,position:'bottom',
-        labels:{color:isDark?'#64748b':'#475569',font:{family:'Inter',size:11},padding:14,usePointStyle:true,pointStyleWidth:8}
-      },
-      tooltip:{
-        backgroundColor:isDark?'#1a1e28':'#ffffff',
-        borderColor:isDark?'#232836':'#e4e7ee',
-        borderWidth:1,
-        titleColor:isDark?'#e2e8f0':'#0f172a',
-        bodyColor:isDark?'#64748b':'#475569',
-        bodyFont:{family:'JetBrains Mono',size:11},
-        padding:10
-      }
-    }
-  },extra||{});
+/* ── build data for TradingView (per-trade cumulative, deduped by date) ── */
+function buildTvData(sorted){
+  // Aggregate to daily end-of-day cumulative so dates are unique
+  const byDate={};
+  let cum=0;
+  sorted.forEach(t=>{
+    cum=parseFloat((cum+t.pnl).toFixed(2));
+    byDate[t.date]=cum;
+  });
+  return Object.keys(byDate).sort().map(d=>({time:d,value:byDate[d]}));
 }
 
-function chartDefaults(){return chartOpts();}
+/* ── base ApexCharts options ── */
+function apexBase(height){
+  const tc=themeColors();
+  return{
+    chart:{background:'transparent',fontFamily:'Inter, sans-serif',height:height||'100%',toolbar:{show:false},zoom:{enabled:false},animations:{enabled:true,speed:380,animateGradually:{enabled:false}},sparkline:{enabled:false}},
+    theme:{mode:isDark()?'dark':'light'},
+    dataLabels:{enabled:false},
+    stroke:{curve:'smooth',width:2},
+    grid:{borderColor:tc.grid,strokeDashArray:0,xaxis:{lines:{show:false}},yaxis:{lines:{show:true}},padding:{top:0,right:6,bottom:0,left:4}},
+    tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono, monospace',fontSize:'11px'},x:{show:true},fixed:{enabled:false}},
+    xaxis:{axisBorder:{show:false},axisTicks:{show:false},labels:{style:{fontFamily:'Inter',fontSize:'10px',fontWeight:500,colors:tc.tick},offsetY:2}},
+    yaxis:{labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},formatter:v=>v!=null?'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):''}},
+    legend:{show:false},
+    states:{hover:{filter:{type:'lighten',value:0.1}},active:{filter:{type:'darken',value:0.1}}},
+  };
+}
+
+/* ── vertical bar chart ── */
+function apexBar(id,labels,vals,nameStr,extraOpts){
+  const base=apexBase();
+  const opts=Object.assign({},base,{
+    series:[{name:nameStr||'Value',data:vals}],
+    chart:Object.assign({},base.chart,{type:'bar'}),
+    plotOptions:{bar:{borderRadius:4,columnWidth:'55%',borderRadiusApplication:'end',distributed:true}},
+    colors:vals.map(v=>v>=0?COLORS.win:COLORS.loss),
+    xaxis:Object.assign({},base.xaxis,{categories:labels}),
+    tooltip:Object.assign({},base.tooltip,{y:{formatter:v=>v!=null?'$'+(v>=0?'+':'')+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):''}}),
+    legend:{show:false},
+  },extraOpts||{});
+  return mkApex(id,opts);
+}
+
+/* ── horizontal bar chart ── */
+function apexHBar(id,labels,vals,colors,nameStr){
+  const base=apexBase();
+  const colorArr=colors||vals.map(v=>v>=0?COLORS.win:COLORS.loss);
+  return mkApex(id,Object.assign({},base,{
+    series:[{name:nameStr||'P&L',data:vals}],
+    chart:Object.assign({},base.chart,{type:'bar'}),
+    plotOptions:{bar:{horizontal:true,borderRadius:3,barHeight:'55%',distributed:true,borderRadiusApplication:'end'}},
+    colors:colorArr,
+    xaxis:Object.assign({},base.xaxis,{categories:labels,labels:{style:{fontFamily:'Inter',fontSize:'10px',colors:themeColors().tick}}}),
+    yaxis:{labels:{style:{fontFamily:'Inter',fontSize:'11px',fontWeight:600,colors:themeColors().tick},maxWidth:130}},
+    tooltip:Object.assign({},base.tooltip,{y:{formatter:v=>'$'+(v>=0?'+':'')+Number(v).toLocaleString('en-US',{maximumFractionDigits:0})}}),
+    legend:{show:false},
+  }));
+}
+
+/* ── win rate bar chart (%) ── */
+function apexWrBar(id,labels,pctVals,horiz,colors){
+  const base=apexBase();
+  const clrs=colors||pctVals.map(v=>v>=60?COLORS.win:v>=40?COLORS.amber:COLORS.loss);
+  const opts=Object.assign({},base,{
+    series:[{name:'Win Rate',data:pctVals}],
+    chart:Object.assign({},base.chart,{type:'bar'}),
+    plotOptions:{bar:{horizontal:!!horiz,borderRadius:3,columnWidth:'55%',barHeight:'55%',distributed:true,borderRadiusApplication:'end'}},
+    colors:clrs,
+    xaxis:Object.assign({},base.xaxis,{categories:labels}),
+    yaxis:{min:0,max:100,labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:themeColors().tickMono},formatter:v=>v+'%'}},
+    tooltip:Object.assign({},base.tooltip,{y:{formatter:v=>Number(v).toFixed(1)+'%'}}),
+    legend:{show:false},
+  });
+  if(horiz){opts.plotOptions.bar.horizontal=true;opts.yaxis={labels:{style:{fontFamily:'Inter',fontSize:'11px',fontWeight:600,colors:themeColors().tick},maxWidth:130}};}
+  return mkApex(id,opts);
+}
+
+/* ── donut chart with center annotation ── */
+function apexDonut(id,series,labels,wr,total){
+  const tc=themeColors();
+  return mkApex(id,{
+    series,
+    labels,
+    chart:{type:'donut',background:'transparent',fontFamily:'Inter, sans-serif',animations:{enabled:true,speed:400},toolbar:{show:false}},
+    theme:{mode:isDark()?'dark':'light'},
+    colors:[COLORS.win,COLORS.loss,'#374563'],
+    dataLabels:{enabled:false},
+    plotOptions:{pie:{donut:{size:'68%',labels:{show:true,name:{show:true,fontSize:'11px',fontFamily:'Inter',color:tc.tick,offsetY:16},value:{show:true,fontSize:'22px',fontFamily:'JetBrains Mono',fontWeight:700,color:wr>=60?COLORS.win:wr>=45?COLORS.amber:COLORS.loss,offsetY:-10,formatter:()=>wr.toFixed(0)+'%'},total:{show:true,showAlways:true,label:'win rate',fontSize:'10px',fontFamily:'Inter',fontWeight:700,color:tc.tick,formatter:()=>wr.toFixed(0)+'%'}}}}},
+    stroke:{show:false},
+    legend:{show:true,position:'bottom',fontFamily:'Inter',fontSize:'11px',fontWeight:600,labels:{colors:tc.legend},markers:{width:8,height:8,radius:4},itemMargin:{horizontal:12,vertical:4}},
+    tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono',fontSize:'11px'},y:{formatter:(v,{seriesIndex})=>v+' trades ('+labels[seriesIndex]+')'}},
+  });
+}
+
+/* ── dual-axis mixed chart (bars + line overlay) ── */
+function apexDual(id,labels,barData,lineData,barName,lineName){
+  const tc=themeColors();
+  const barColors=barData.map(v=>v>=0?COLORS.win+'cc':COLORS.loss+'cc');
+  return mkApex(id,{
+    series:[{name:barName||'P&L',type:'bar',data:barData},{name:lineName||'Win %',type:'line',data:lineData}],
+    chart:{background:'transparent',fontFamily:'Inter, sans-serif',type:'bar',height:'100%',toolbar:{show:false},zoom:{enabled:false},animations:{enabled:true,speed:350}},
+    theme:{mode:isDark()?'dark':'light'},
+    dataLabels:{enabled:false},
+    stroke:{width:[0,2.5],curve:'smooth'},
+    plotOptions:{bar:{borderRadius:5,columnWidth:'52%',borderRadiusApplication:'end',distributed:true}},
+    colors:barColors,
+    fill:{opacity:[0.85,1]},
+    markers:{size:[0,4],strokeWidth:0,hover:{size:6}},
+    xaxis:{categories:labels,axisBorder:{show:false},axisTicks:{show:false},labels:{style:{fontFamily:'Inter',fontSize:'10px',fontWeight:500,colors:tc.tick}}},
+    yaxis:[
+      {seriesName:barName||'P&L',title:{text:undefined},labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:tc.tickMono},formatter:v=>'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0})},axisBorder:{show:false},axisTicks:{show:false}},
+      {seriesName:lineName||'Win %',opposite:true,min:0,max:100,title:{text:undefined},labels:{style:{fontFamily:'JetBrains Mono',fontSize:'10px',colors:COLORS.ny},formatter:v=>v+'%'},axisBorder:{show:false},axisTicks:{show:false}}
+    ],
+    grid:{borderColor:tc.grid,strokeDashArray:0,xaxis:{lines:{show:false}},yaxis:{lines:{show:true}},padding:{top:0,right:8,bottom:0,left:4}},
+    legend:{show:true,position:'top',fontFamily:'Inter',fontSize:'11px',fontWeight:600,labels:{colors:tc.legend},markers:{width:9,height:9,radius:3},itemMargin:{horizontal:12,vertical:2}},
+    tooltip:{theme:isDark()?'dark':'light',style:{fontFamily:'JetBrains Mono',fontSize:'11px'},shared:true,intersect:false,y:[{formatter:v=>'$'+(v>=0?'+':'')+Number(v).toLocaleString('en-US',{maximumFractionDigits:0})},{formatter:v=>Number(v).toFixed(0)+'%'}]},
+  });
+}
+
+/* ── area / line chart (drawdown, time-series) ── */
+function apexArea(id,labels,vals,color,nameStr,yFmt){
+  const base=apexBase();
+  const c=color||COLORS.win;
+  return mkApex(id,Object.assign({},base,{
+    series:[{name:nameStr||'Value',data:vals}],
+    chart:Object.assign({},base.chart,{type:'area'}),
+    fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.4,opacityTo:.0,stops:[0,100]}},
+    stroke:{curve:'smooth',width:2,colors:[c]},
+    colors:[c],
+    xaxis:Object.assign({},base.xaxis,{categories:labels}),
+    yaxis:Object.assign({},base.yaxis,{labels:{...base.yaxis.labels,formatter:yFmt||(v=>'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}))}}),
+    tooltip:Object.assign({},base.tooltip,{y:{formatter:yFmt||(v=>'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}))}}),
+    legend:{show:false},
+  }));
+}
+
 
 /* ═══════════════════════════════════════════════════════
    DASHBOARD
@@ -1639,151 +1751,54 @@ function renderDashboard(){
     {l:'Avg Win',v:fmt$(s.avgWin),cls:'g',sub:`Avg Loss: ${fmt$(s.avgLoss)}`},
   ];
   const kpiRow=$('kpi-row'); if(kpiRow) kpiRow.innerHTML=kpiData.map(k=>`<div class="kpi"><div class="kpi-lbl">${k.l}</div><div class="kpi-val ${k.cls}">${k.v}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
-  // Equity curve — strictly chronological cumulative sum (Fix #10)
+  // ── Equity Curve (TradingView Lightweight Charts) ──
   const sorted=[...data].sort((a,b)=>a.date.localeCompare(b.date)||(a.entryTime||'').localeCompare(b.entryTime||''));
-  let cum=0; const eqL=[],eqD=[];
-  sorted.forEach(function(t,i){
-    cum+=t.pnl;
-    const lbl=fmtDate(t.date)||t.date;
-    eqL.push(lbl);
-    eqD.push(parseFloat(cum.toFixed(2)));
-  });
-  const eqColor=cum>=0?COLORS.win:COLORS.loss;
+  let cum=0; sorted.forEach(t=>{cum=parseFloat((cum+t.pnl).toFixed(2));});
+  const tvData=buildTvData(sorted);
   const sub=$('dash-equity-subtitle'); if(sub) sub.textContent=data.length+' trades · '+fmt$(cum)+' total';
   const badge=$('dash-equity-badge'); if(badge) badge.innerHTML='<span class="badge '+(cum>=0?'b-win':'b-loss')+'">'+(cum>=0?'▲':'▼')+' '+fmt$(cum)+'</span>';
-  const eqOpts=chartOpts();
-  eqOpts.plugins.tooltip.callbacks.label=function(ctx){return ' P&L: $'+Number(ctx.parsed.y).toLocaleString('en-US',{maximumFractionDigits:0});};
-  mkChart('ch-equity',{type:'line',data:{labels:eqL,datasets:[{label:'Equity',data:eqD,borderColor:eqColor,backgroundColor:eqColor+'18',borderWidth:2.5,fill:true,tension:.38,pointRadius:2,pointHoverRadius:6,pointBackgroundColor:eqColor}]},options:eqOpts});
-  // P&L by Day of Week (Mon=0..Fri=4)
-  const dowNames=['Monday','Tuesday','Wednesday','Thursday','Friday'];
-  const dowPnl=[0,0,0,0,0]; // index 0=Mon, 1=Tue, ... 4=Fri
+  if(tvData.length) mkTv('ch-equity',tvData,cum>=0);
+  else destroyChart('ch-equity');
+
+  // ── P&L by Day of Week — dual axis (ApexCharts) ──
+  const dowNames=['Mon','Tue','Wed','Thu','Fri'];
+  const dowPnl=[0,0,0,0,0],dowN=[0,0,0,0,0],dowW=[0,0,0,0,0];
   sorted.forEach(function(t){
     if(!t.date)return;
-    var d=new Date(t.date+'T12:00');
-    var dow=d.getDay(); // 0=Sun,1=Mon,...,6=Sat
-    if(dow>=1&&dow<=5)dowPnl[dow-1]=parseFloat((dowPnl[dow-1]+t.pnl).toFixed(2));
-  });
-  const dowOpts=chartOpts();
-  dowOpts.plugins.tooltip.callbacks.label=function(ctx){
-    var v=ctx.parsed&&ctx.parsed.y!=null?ctx.parsed.y:0;
-    var sign=v>=0?'+':'-';
-    return ' $'+sign+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});
-  };
-  // Also compute win rates per DOW for dashboard
-  var dowN=[0,0,0,0,0],dowW=[0,0,0,0,0];
-  sorted.forEach(function(t){
-    if(!t.date)return;
-    var dd=new Date(t.date+'T12:00');var dow=dd.getDay();
-    if(dow>=1&&dow<=5){dowN[dow-1]++;if(t.pnl>0)dowW[dow-1]++;}
+    var dow=new Date(t.date+'T12:00').getDay();
+    if(dow>=1&&dow<=5){dowPnl[dow-1]=parseFloat((dowPnl[dow-1]+t.pnl).toFixed(2));dowN[dow-1]++;if(t.pnl>0)dowW[dow-1]++;}
   });
   var dowWr=dowN.map(function(n,i){return n>0?Math.round(dowW[i]/n*100):0;});
-  var isDashDark=document.documentElement.getAttribute('data-theme')!=='light';
-  var dashGc=isDashDark?'rgba(26,37,64,.5)':'rgba(210,218,234,.7)';
-  var dashTc=isDashDark?'#506080':'#8a9bb8';
-  destroyChart('ch-daily');
-  var dowCanvas=$('ch-daily');
-  if(dowCanvas){
-    S.charts['ch-daily']=new Chart(dowCanvas,{
-      type:'bar',
-      data:{labels:dowNames,datasets:[
-        {label:'Net P&L',data:dowPnl,backgroundColor:dowPnl.map(function(v){return v>=0?COLORS.win+'90':COLORS.loss+'90';}),borderRadius:6,borderSkipped:false,yAxisID:'yP',order:2},
-        {label:'Win %',data:dowWr,type:'line',borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.2)',borderWidth:2,pointRadius:4,pointHoverRadius:7,pointBackgroundColor:'#3b82f6',fill:false,tension:.3,yAxisID:'yW',order:1}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,animation:{duration:400},
-        plugins:{
-          legend:{display:true,position:'top',labels:{color:isDashDark?'#64748b':'#475569',font:{family:'Inter',size:10},padding:12,usePointStyle:true,pointStyleWidth:7}},
-          tooltip:{mode:'index',intersect:false,backgroundColor:isDashDark?'#1a1e28':'#ffffff',borderColor:isDashDark?'#232836':'#e4e7ee',borderWidth:1,padding:10,titleFont:{family:'Inter',size:11,weight:'600'},bodyFont:{family:'JetBrains Mono',size:11},
-            callbacks:{label:function(ctx){if(ctx.datasetIndex===0){var v=ctx.parsed.y;return ' P&L: '+(v>=0?'+':'')+'$'+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});}return ' Win: '+ctx.parsed.y+'%';}}}
-        },
-        scales:{
-          x:{ticks:{color:dashTc,font:{family:'Inter',size:10}},grid:{color:dashGc}},
-          yP:{position:'left',ticks:{color:dashTc,font:{family:'JetBrains Mono',size:9},callback:function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});}},grid:{color:dashGc}},
-          yW:{position:'right',min:0,max:100,ticks:{color:'#3b82f6',font:{family:'JetBrains Mono',size:9},callback:function(v){return v+'%';}},grid:{display:false}}
-        }
-      }
-    });
-  }
-  // Monthly P&L (Fix #6)
-  const byMonth={};
-  sorted.forEach(function(t){if(!t.date||t.date.length<7)return;const mk=t.date.slice(0,7);byMonth[mk]=(byMonth[mk]||0)+t.pnl;});
+  apexDual('ch-daily',dowNames,dowPnl,dowWr,'Net P&L','Win %');
+
+  // ── Monthly P&L — dual axis (ApexCharts) ──
+  const byMonth={},moWrMap={};
+  sorted.forEach(function(t){
+    if(!t.date||t.date.length<7)return;
+    var mk=t.date.slice(0,7);
+    byMonth[mk]=(byMonth[mk]||0)+t.pnl;
+    if(!moWrMap[mk])moWrMap[mk]={n:0,w:0};
+    moWrMap[mk].n++;if(t.pnl>0)moWrMap[mk].w++;
+  });
   const moKeys=Object.keys(byMonth).sort();
-  const moLabels=moKeys.map(function(k){const[y,m]=k.split('-');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (mn[parseInt(m,10)-1]||m)+' '+y.slice(2);});
-  const moOpts=chartOpts();
-  moOpts.plugins.tooltip.callbacks.label=function(ctx){return ' '+fmt$(ctx.parsed.y);};
-  // Monthly win rates for secondary axis
-  var moWrMap={};
-  sorted.forEach(function(t){if(!t.date||t.date.length<7)return;var mk=t.date.slice(0,7);if(!moWrMap[mk])moWrMap[mk]={n:0,w:0};moWrMap[mk].n++;if(t.pnl>0)moWrMap[mk].w++;});
+  const moLabels=moKeys.map(function(k){var p=k.split('-');var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return(mn[parseInt(p[1],10)-1]||p[1])+" '"+p[0].slice(2);});
   var moWrVals=moKeys.map(function(k){var d=moWrMap[k];return d&&d.n>0?Math.round(d.w/d.n*100):0;});
-  destroyChart('ch-monthly-pnl');
-  var moCanvas=$('ch-monthly-pnl');
-  if(moCanvas){
-    var isDMoDark=document.documentElement.getAttribute('data-theme')!=='light';
-    var moGc=isDMoDark?'rgba(26,37,64,.5)':'rgba(210,218,234,.7)';
-    var moTc=isDMoDark?'#506080':'#8a9bb8';
-    S.charts['ch-monthly-pnl']=new Chart(moCanvas,{
-      type:'bar',
-      data:{labels:moLabels,datasets:[
-        {label:'Monthly P&L',data:moKeys.map(function(k){return parseFloat(byMonth[k].toFixed(2));}),backgroundColor:moKeys.map(function(k){return byMonth[k]>=0?COLORS.win+'90':COLORS.loss+'90';}),borderRadius:5,borderSkipped:false,yAxisID:'yP',order:2},
-        {label:'Win %',data:moWrVals,type:'line',borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.2)',borderWidth:2,pointRadius:4,pointHoverRadius:7,pointBackgroundColor:'#3b82f6',fill:false,tension:.3,yAxisID:'yW',order:1}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,animation:{duration:400},
-        plugins:{
-          legend:{display:true,position:'top',labels:{color:isDMoDark?'#64748b':'#475569',font:{family:'Inter',size:10},padding:12,usePointStyle:true,pointStyleWidth:7}},
-          tooltip:{mode:'index',intersect:false,backgroundColor:isDMoDark?'#1a1e28':'#ffffff',borderColor:isDMoDark?'#232836':'#e4e7ee',borderWidth:1,padding:10,titleFont:{family:'Inter',size:11,weight:'600'},bodyFont:{family:'JetBrains Mono',size:11},
-            callbacks:{label:function(ctx){if(ctx.datasetIndex===0){var v=ctx.parsed.y;return ' P&L: '+fmt$(v);}return ' Win: '+ctx.parsed.y+'%';}}}
-        },
-        scales:{
-          x:{ticks:{color:moTc,font:{family:'Inter',size:10}},grid:{color:moGc}},
-          yP:{position:'left',ticks:{color:moTc,font:{family:'JetBrains Mono',size:9},callback:function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});}},grid:{color:moGc}},
-          yW:{position:'right',min:0,max:100,ticks:{color:'#3b82f6',font:{family:'JetBrains Mono',size:9},callback:function(v){return v+'%';}},grid:{display:false}}
-        }
-      }
-    });
-  }
-  // Win/Loss doughnut — redesigned with center text
-  const be_count=s.t-s.wins-s.losses;
-  const donutOpts=chartOptsPolar({
-    cutout:'68%',
-    plugins:{
-      legend:{display:true,position:'bottom',labels:{color:document.documentElement.getAttribute('data-theme')==='light'?'#64748b':'#7889aa',font:{family:'Inter',size:11},padding:14,usePointStyle:true,pointStyleWidth:8}},
-      tooltip:{callbacks:{label:ctx=>'  '+ctx.label+': '+ctx.parsed}},
-    }
-  });
-  // Center text plugin (inline)
-  const centerTextPlugin={id:'centerText',beforeDraw(chart){
-    const{width,height,ctx}=chart;
-    ctx.save();
-    const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-    const textColor=isDark?'#dde3f0':'#1e293b';
-    const subColor=isDark?'#7889aa':'#64748b';
-    const cx=chart.chartArea?chart.chartArea.left+(chart.chartArea.right-chart.chartArea.left)/2:width/2;
-    const cy=chart.chartArea?chart.chartArea.top+(chart.chartArea.bottom-chart.chartArea.top)/2:height/2;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.font='700 22px JetBrains Mono';
-    ctx.fillStyle=s.wr>=60?'#22c55e':s.wr>=45?'#f59e0b':'#f43f5e';
-    ctx.fillText(s.wr.toFixed(0)+'%',cx,cy-10);
-    ctx.font='500 11px Inter';
-    ctx.fillStyle=subColor;
-    ctx.fillText(s.t+' trades',cx,cy+12);
-    ctx.restore();
-  }};
-  destroyChart('ch-wl');
-  const wlCanvas=$('ch-wl');
-  if(wlCanvas) S.charts['ch-wl']=new Chart(wlCanvas,{
-    type:'doughnut',
-    data:{labels:['Wins','Losses','Break Even'],datasets:[{data:[s.wins||0,s.losses||0,be_count>=0?be_count:0],backgroundColor:[COLORS.win,COLORS.loss,'#3d5070'],borderColor:'transparent',borderWidth:0,hoverOffset:6}]},
-    options:donutOpts,
-    plugins:[centerTextPlugin]
-  });
-  // Sessions - filter out zero sessions for cleaner chart
+  apexDual('ch-monthly-pnl',moLabels,moKeys.map(function(k){return parseFloat(byMonth[k].toFixed(2));}),moWrVals,'Monthly P&L','Win %');
+
+  // ── Win/Loss Donut (ApexCharts with center label) ──
+  const be_count=Math.max(0,s.t-s.wins-s.losses);
+  apexDonut('ch-wl',[s.wins||0,s.losses||0,be_count],['Wins','Losses','Break Even'],s.wr,s.t);
+
+  // ── Sessions bar ──
   const sessions=['NY','ASIA','London'];
   const sPnl=sessions.map(sess=>data.filter(t=>t.session===sess).reduce((a,t)=>a+t.pnl,0));
-  mkChart('ch-sess',{type:'bar',data:{labels:sessions,datasets:[{data:sPnl,backgroundColor:[COLORS.ny+'90',COLORS.asia+'90',COLORS.london+'90'],borderRadius:5,borderSkipped:false}]},options:chartOpts()});
-  // Setups - guard against undefined setup names
-  const setupMap={};
-  data.forEach(t=>{const k=t.setup||'Unknown';if(!setupMap[k])setupMap[k]={pnl:0,count:0};setupMap[k].pnl+=t.pnl;setupMap[k].count++;});
-  const sus=Object.keys(setupMap).filter(k=>k&&k!=='undefined');
-  if(sus.length) mkChart('ch-setup',{type:'bar',data:{labels:sus,datasets:[{data:sus.map(k=>setupMap[k].pnl),backgroundColor:sus.map(k=>setupMap[k].pnl>=0?COLORS.win+'90':COLORS.loss+'90'),borderRadius:5,borderSkipped:false}]},options:chartOpts()});
+  apexBar('ch-sess',sessions,sPnl,'Session P&L');
+
+  // ── Setups bar ──
+  const setupMapD={};
+  data.forEach(t=>{const k=t.setup||'Unknown';if(!setupMapD[k])setupMapD[k]={pnl:0};setupMapD[k].pnl+=t.pnl;});
+  const susD=Object.keys(setupMapD).filter(k=>k&&k!=='undefined');
+  if(susD.length) apexBar('ch-setup',susD,susD.map(k=>setupMapD[k].pnl),'Setup P&L');
   // Streaks
   renderStreaks(data);
   // AI insights
@@ -2238,43 +2253,34 @@ function renderAnOverview(data){
     eqD.push(cum);
     ddD.push(-dd);
   });
-  // Equity curve — respect eqMode toggle
-  const eqDisplay=eqMode==='pct'&&eqD.length>0?eqD.map(function(v){var base=eqD[0]||1;return parseFloat(((v/Math.abs(base||1))*100).toFixed(2));}):eqD;
-  const anEqOpts=chartOpts();
-  anEqOpts.scales.y=Object.assign({},anEqOpts.scales.y,{ticks:Object.assign({},anEqOpts.scales.y.ticks,{callback:eqMode==='pct'?function(v){return v+'%';}:function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});}})});
-  anEqOpts.plugins.tooltip.callbacks.label=eqMode==='pct'?function(ctx){return ' '+ctx.parsed.y.toFixed(2)+'%';}:function(ctx){return ' $'+Number(ctx.parsed.y).toLocaleString('en-US',{maximumFractionDigits:0});};
-  mkChart('an-equity',{type:'line',data:{labels:eqL,datasets:[{label:'Equity',data:eqDisplay,borderColor:COLORS.win,backgroundColor:COLORS.win+'15',borderWidth:2,fill:true,tension:.35,pointRadius:0}]},options:anEqOpts});
-  // Sync toggle button states
+  // ── Analytics Equity Curve (TradingView + P&L/% toggle) ──
+  var tvAnData=buildTvData(sorted);
+  if(eqMode==='pct'&&tvAnData.length>1){var base0=tvAnData[0].value||1;tvAnData=tvAnData.map(function(p){return{time:p.time,value:parseFloat(((p.value/Math.abs(base0))*100).toFixed(2))};});}
+  var finalEq=eqD.length?eqD[eqD.length-1]:0;
+  if(tvAnData.length) mkTv('an-equity',tvAnData,finalEq>=0); else destroyChart('an-equity');
+  // Sync toggle buttons
   var btnPnl=$('eq-toggle-pnl'),btnPct=$('eq-toggle-pct');
   if(btnPnl&&btnPct){
-    if(eqMode==='pnl'){btnPnl.style.background='var(--adim2)';btnPnl.style.borderColor='var(--accent)';btnPnl.style.color='var(--accent)';btnPct.style.background='';btnPct.style.borderColor='';btnPct.style.color='';}
+    if(eqMode==='pnl'){btnPnl.style.background='var(--adim)';btnPnl.style.borderColor='var(--accent)';btnPnl.style.color='var(--accent)';btnPct.style.background='';btnPct.style.borderColor='';btnPct.style.color='';}
     else{btnPct.style.background='var(--adim)';btnPct.style.borderColor='var(--accent)';btnPct.style.color='var(--accent)';btnPnl.style.background='';btnPnl.style.borderColor='';btnPnl.style.color='';}
   }
-  const ddOpts=chartOpts();
-  ddOpts.plugins.tooltip.callbacks.label=function(ctx){return ' '+fmt$(ctx.parsed.y);};
-  mkChart('an-dd',{type:'line',data:{labels:eqL,datasets:[{label:'Drawdown',data:ddD,borderColor:COLORS.loss,backgroundColor:COLORS.loss+'15',borderWidth:1.5,fill:true,tension:.25,pointRadius:0}]},options:ddOpts});
+  // ── Drawdown Area (ApexCharts) ──
+  apexArea('an-dd',eqL,ddD,COLORS.loss,'Drawdown',function(v){return v!=null?'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):'';});
   const s=calcStats(data);
   const anKpis=$('an-kpis'); if(anKpis) anKpis.innerHTML=[
     {l:'Max Drawdown',v:fmt$(-maxDD),cls:'r'},{l:'Win Rate',v:s.wr.toFixed(1)+'%',cls:s.wr>=60?'g':'r'},
     {l:'Profit Factor',v:isFinite(s.pf)?s.pf.toFixed(2):'∞',cls:s.pf>=1.5?'g':'r'},{l:'Avg R / Trade',v:fmtR(s.avgR),cls:s.avgR>=0?'g':'r'}
   ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.l}</div><div class="kpi-val ${k.cls}" style="font-size:20px">${k.v}</div></div>`).join('');
-  // Instrument perf — guard undefined
+  // ── Instrument Performance ──
   const instMap={};
   data.forEach(t=>{const k=t.instrument||'Unknown';if(!instMap[k])instMap[k]={pnl:0,n:0};instMap[k].pnl+=t.pnl;instMap[k].n++;});
   const insts=Object.keys(instMap).filter(k=>k&&k!=='undefined');
-  if(insts.length){
-    const instOpts=chartOpts();
-    instOpts.plugins.tooltip.callbacks.label=function(ctx){
-      const v=ctx.parsed?.y;
-      return (v!=null)?' $'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):'';
-    };
-    mkChart('an-inst',{type:'bar',data:{labels:insts,datasets:[{label:'P&L',data:insts.map(i=>instMap[i].pnl),backgroundColor:insts.map(i=>instMap[i].pnl>=0?COLORS.win+'90':COLORS.loss+'90'),borderRadius:4}]},options:instOpts});
-  }
-  // Monthly win rate
+  if(insts.length) apexBar('an-inst',insts,insts.map(i=>instMap[i].pnl),'P&L');
+  // ── Win Rate by Month ──
   const mo={};
   data.forEach(t=>{if(!t.date||t.date.length<7)return;const k=t.date.slice(0,7);if(!mo[k])mo[k]={w:0,l:0};t.pnl>0?mo[k].w++:t.pnl<0?mo[k].l++:null;});
   const moK=Object.keys(mo).sort();
-  if(moK.length) mkChart('an-monthly',{type:'bar',data:{labels:moK,datasets:[{data:moK.map(k=>mo[k].w+mo[k].l>0?Math.round(mo[k].w/(mo[k].w+mo[k].l)*100):0),backgroundColor:COLORS.ny+'90',borderRadius:4}]},options:chartOptsPct()});
+  if(moK.length) apexWrBar('an-monthly',moK,moK.map(k=>mo[k].w+mo[k].l>0?Math.round(mo[k].w/(mo[k].w+mo[k].l)*100):0),false);
 }
 
 function renderAnSessions(data){
@@ -2289,19 +2295,10 @@ function renderAnSessions(data){
   });
   $('an-sess-kpis').innerHTML=sSt.map(s=>`<div class="kpi"><div class="kpi-lbl">${s.s}</div><div class="kpi-val ${s.pnl>=0?'g':'r'}" style="font-size:18px">${fmt$(s.pnl)}</div><div class="kpi-sub">${s.wr}% WR · ${s.t} trades · ${fmtR(s.avgR)} avg</div></div>`).join('');
   const cols=[COLORS.ny+'90',COLORS.asia+'90',COLORS.london+'90'];
-  const sessPnlOpts=chartOpts();
-  sessPnlOpts.plugins.tooltip.callbacks.label=function(ctx){
-    const v=ctx.parsed?.y;
-    return (v!=null)?' $'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):'';
-  };
-  mkChart('an-sess-pnl',{type:'bar',data:{labels:sessions,datasets:[{label:'P&L',data:sSt.map(s=>s.pnl),backgroundColor:cols,borderRadius:5}]},options:sessPnlOpts});
-  const sessWrOpts=chartOptsPct();
-  sessWrOpts.plugins.tooltip.callbacks.label=function(ctx){
-    const v=ctx.parsed?.y;
-    return (v!=null)?' '+Number(v).toFixed(1)+'%':'';
-  };
-  mkChart('an-sess-wr',{type:'bar',data:{labels:sessions,datasets:[{label:'Win%',data:sSt.map(s=>s.wr),backgroundColor:cols,borderRadius:5}]},options:sessWrOpts});
-  // Render session comparison panel
+  // ── Session P&L (ApexCharts) ──
+  apexBar('an-sess-pnl',sessions,sSt.map(s=>s.pnl),'Session P&L');
+  // ── Session Win Rate (ApexCharts) ──
+  apexWrBar('an-sess-wr',sessions,sSt.map(s=>s.wr),false,[COLORS.ny,COLORS.asia,COLORS.london]);
   renderSessionComparison(data,sSt);
   renderRuleCompliance(data);
 }
@@ -2323,34 +2320,11 @@ function renderAnSetups(data){
     if(sp)sp.innerHTML='<div class="empty-state"><div class="es-icon">⟋</div><p>No setup data yet.</p></div>';
     return;
   }
-  // P&L chart — labels MUST match setupMap keys exactly
-  var pnlVals=sus.map(function(k){return setupMap[k].pnl;});
-  var pnlColors=sus.map(function(k){return setupMap[k].pnl>=0?COLORS.win+'90':COLORS.loss+'90';});
-  var pnlOpts=chartOpts({indexAxis:'y'});
-  pnlOpts.plugins.tooltip.callbacks.label=function(ctx){return ' '+fmt$(ctx.parsed.x);};
-  mkChart('an-setup-pnl',{
-    type:'bar',
-    data:{labels:sus,datasets:[{label:'P&L',data:pnlVals,backgroundColor:pnlColors,borderRadius:5,borderSkipped:false}]},
-    options:pnlOpts
-  });
-  // Win rate chart — x-axis is % (horizontal bar)
-  var wrVals=sus.map(function(k){return setupMap[k].n?Math.round(setupMap[k].w/setupMap[k].n*100):0;});
-  var wrColors=sus.map(function(k){
-    var wr=setupMap[k].n?setupMap[k].w/setupMap[k].n:0;
-    return wr>=0.6?COLORS.win+'90':wr>=0.4?COLORS.amber+'90':COLORS.loss+'90';
-  });
-  var wrOpts=chartOpts({indexAxis:'y'});
-  wrOpts.scales.x=Object.assign({},wrOpts.scales.x,{
-    min:0,max:100,
-    ticks:Object.assign({},wrOpts.scales.x.ticks,{callback:function(v){return v+'%';}})
-  });
-  wrOpts.plugins.tooltip.callbacks.label=function(ctx){return ' '+ctx.parsed.x+'%';};
-  mkChart('an-setup-wr',{
-    type:'bar',
-    data:{labels:sus,datasets:[{label:'Win %',data:wrVals,backgroundColor:wrColors,borderRadius:5,borderSkipped:false}]},
-    options:wrOpts
-  });
-  // Summary table — same setupMap, same sus array
+  // ── Setup P&L horizontal bar (ApexCharts) ──
+  apexHBar('an-setup-pnl',sus,sus.map(function(k){return setupMap[k].pnl;}),null,'P&L');
+  // ── Setup Win Rate horizontal bar % (ApexCharts) ──
+  apexWrBar('an-setup-wr',sus,sus.map(function(k){return setupMap[k].n?Math.round(setupMap[k].w/setupMap[k].n*100):0;}),true);
+    // Summary table — same setupMap, same sus array
   var tbl=$('an-setup-table');
   if(!tbl)return;
   var rows=sus.map(function(k){
@@ -2389,7 +2363,8 @@ function renderAnTags(data){
   const tm={};
   data.forEach(t=>(t.tags||[]).forEach(tid=>{if(!tm[tid])tm[tid]={pnl:0,n:0,w:0};tm[tid].pnl+=t.pnl;tm[tid].n++;if(t.pnl>0)tm[tid].w++;}));
   const tids=Object.keys(tm).filter(k=>tagMap[k]).sort((a,b)=>tm[b].pnl-tm[a].pnl);
-  mkChart('an-tag-pnl',{type:'bar',data:{labels:tids.map(k=>tagMap[k]?.name||k),datasets:[{data:tids.map(k=>tm[k].pnl),backgroundColor:tids.map(k=>tagMap[k]?.color+'99'||'#3b82f699'),borderRadius:5}]},options:chartOpts({indexAxis:'y'})});
+  // ── Tag P&L horizontal bar (ApexCharts) ──
+  apexHBar('an-tag-pnl',tids.map(k=>tagMap[k]?.name||k),tids.map(k=>tm[k].pnl),tids.map(k=>tagMap[k]?.color||COLORS.ny),'Tag P&L');
   $('an-tag-table').innerHTML=`<table style="width:100%;font-size:11px"><thead><tr><th style="padding:8px 6px;text-align:left;color:var(--t3);border-bottom:1px solid var(--border);font-size:9px">Tag</th><th style="padding:8px 6px;text-align:right;color:var(--t3);border-bottom:1px solid var(--border);font-size:9px">Count</th><th style="padding:8px 6px;text-align:right;color:var(--t3);border-bottom:1px solid var(--border);font-size:9px">W%</th><th style="padding:8px 6px;text-align:right;color:var(--t3);border-bottom:1px solid var(--border);font-size:9px">P&L</th></tr></thead><tbody>${tids.map(k=>{const tg=tagMap[k];const d=tm[k];const wr=d.n?Math.round(d.w/d.n*100):0;return`<tr><td style="padding:7px 6px"><span class="tag-chip" style="background:${tg.color}20;color:${tg.color}">${tg.name}</span></td><td style="padding:7px 6px;text-align:right;font-family:var(--f-mono)">${d.n}</td><td style="padding:7px 6px;text-align:right;font-family:var(--f-mono);color:${wr>=60?'var(--green)':wr>=40?'var(--amber)':'var(--red)'}">${wr}%</td><td style="padding:7px 6px;text-align:right;font-family:var(--f-mono);color:${pnlColor(d.pnl)}">${fmt$(d.pnl)}</td></tr>`;}).join('')}</tbody></table>`;
 }
 
@@ -2425,24 +2400,10 @@ function renderAnTime(data){
     return `${displayH}:${mm}${suffix}`;
   });
   // P&L chart
-  const timePnlOpts=chartOpts();
-  timePnlOpts.plugins.tooltip.callbacks.label=function(ctx){
-    const v=ctx.parsed?.y;
-    return (v!=null)?' $'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}):'';
-  };
-  mkChart('an-time-pnl',{
-    type:'bar',
-    data:{labels:hlabels,datasets:[{label:'P&L',data:bkeys.map(k=>parseFloat(buckets[k].pnl.toFixed(2))),backgroundColor:bkeys.map(k=>buckets[k].pnl>=0?COLORS.win+'90':COLORS.loss+'90'),borderRadius:4,borderSkipped:false}]},
-    options:timePnlOpts
-  });
-  // Win rate chart — PERCENTAGE y-axis
-  const wrOpts=chartOpts();
-  wrOpts.scales.y={...wrOpts.scales.y,min:0,max:100,ticks:{...wrOpts.scales.y.ticks,callback:v=>v+'%'}};
-  mkChart('an-time-wr',{
-    type:'bar',
-    data:{labels:hlabels,datasets:[{data:bkeys.map(k=>buckets[k].n?Math.round(buckets[k].w/buckets[k].n*100):0),backgroundColor:COLORS.ny+'90',borderRadius:4,borderSkipped:false}]},
-    options:wrOpts
-  });
+  // ── Time-of-Day P&L (ApexCharts bar) ──
+  apexBar('an-time-pnl',hlabels,bkeys.map(k=>parseFloat(buckets[k].pnl.toFixed(2))),'P&L');
+  // ── Time-of-Day Win Rate (ApexCharts %) ──
+  apexWrBar('an-time-wr',hlabels,bkeys.map(k=>buckets[k].n?Math.round(buckets[k].w/buckets[k].n*100):0),false);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -2547,75 +2508,10 @@ function renderAnWeekday(data){
   var isDark=document.documentElement.getAttribute('data-theme')!=='light';
   // Dual-axis chart: bars = P&L, line = Win Rate
   destroyChart('an-weekday-chart');
-  var wdCanvas=$('an-weekday-chart');
-  if(wdCanvas){
-    var gc=isDark?'rgba(26,37,64,.5)':'rgba(210,218,234,.7)';
-    var tc=isDark?'#506080':'#8a9bb8';
-    S.charts['an-weekday-chart']=new Chart(wdCanvas,{
-      type:'bar',
-      data:{
-        labels:DOW,
-        datasets:[
-          {
-            label:'Net P&L ($)',
-            data:pnlVals,
-            backgroundColor:pnlVals.map(function(v){return v>=0?COLORS.win+'99':COLORS.loss+'99';}),
-            borderRadius:6,borderSkipped:false,
-            yAxisID:'yPnl',order:2
-          },
-          {
-            label:'Win Rate (%)',
-            data:wrVals,
-            type:'line',
-            borderColor:COLORS.accent||'#3b82f6',
-            backgroundColor:'rgba(59,130,246,.2)',
-            borderWidth:2.5,
-            pointRadius:5,pointHoverRadius:8,
-            pointBackgroundColor:'#3b82f6',
-            fill:false,tension:.3,
-            yAxisID:'yWr',order:1
-          }
-        ]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,animation:{duration:400},
-        plugins:{
-          legend:{display:true,position:'top',labels:{color:isDark?'#64748b':'#475569',font:{family:'Inter',size:11},padding:16,usePointStyle:true,pointStyleWidth:8}},
-          tooltip:{
-            mode:'index',intersect:false,
-            backgroundColor:isDark?'#1a1e28':'#ffffff',
-            borderColor:isDark?'#232836':'#e4e7ee',
-            borderWidth:1,
-            titleFont:{family:'Inter',size:12,weight:'600'},
-            bodyFont:{family:'JetBrains Mono',size:11},
-            padding:12,
-            callbacks:{
-              title:function(items){return items[0]?items[0].label:'';},
-              label:function(ctx){
-                if(ctx.datasetIndex===0){
-                  var v=ctx.parsed.y;
-                  return ' P&L: '+(v>=0?'+':'')+' $'+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});
-                } else {
-                  return ' Win Rate: '+ctx.parsed.y+'%';
-                }
-              },
-              afterBody:function(items){
-                var idx=items[0]?items[0].dataIndex:-1;
-                if(idx>=0&&stats[idx].n>0)return ['','  Trades: '+stats[idx].n,'  Wins: '+stats[idx].w+' / Losses: '+(stats[idx].n-stats[idx].w)];
-                return [];
-              }
-            }
-          }
-        },
-        scales:{
-          x:{ticks:{color:tc,font:{family:'Inter',size:11,weight:'600'}},grid:{color:gc}},
-          yPnl:{position:'left',ticks:{color:tc,font:{family:'JetBrains Mono',size:10},callback:function(v){return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});}},grid:{color:gc}},
-          yWr:{position:'right',min:0,max:100,ticks:{color:'#3b82f6',font:{family:'JetBrains Mono',size:10},callback:function(v){return v+'%';}},grid:{display:false}}
-        }
-      }
-    });
+  if($('an-weekday-chart')){
+    apexDual('an-weekday-chart',DOW,pnlVals,wrVals,'Net P&L','Win %');
   }
-  // KPI cards for best/worst day
+    // KPI cards for best/worst day
   var best=stats.reduce(function(b,s,i){return s.pnl>b.pnl?{pnl:s.pnl,i:i}:b;},{pnl:-Infinity,i:0});
   var worst=stats.reduce(function(b,s,i){return s.pnl<b.pnl?{pnl:s.pnl,i:i}:b;},{pnl:Infinity,i:0});
   var kpiEl=$('an-weekday-kpis');
